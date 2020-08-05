@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Transaction, transactionsApiUrlExt } from '../shared/transactions';
+import { Transaction, transactionsApiUrlExt, formatMilliseconds, formatDollars } from '../shared/transactions';
 import { Sorting } from '../shared/sorting';
 import { impossible } from '../shared/utils';
 
@@ -45,6 +45,7 @@ export class TransactionsService {
 
   getTransactions(
     sorting?: Sorting,
+    filtering?: string,
   ): Observable<Transaction[]> {
     const { http, transactionsUrl, handleError } = this;
     let result = http.get<Transaction[]>(transactionsUrl)
@@ -58,6 +59,25 @@ export class TransactionsService {
         .pipe(
           map(transactions => transactions.sort(compare)),
         );
+    }
+
+    if (filtering !== undefined) {
+      const filteringCleaned = filtering.trim().toLocaleLowerCase();
+      if (filteringCleaned.length > 0) {
+        function includesFilter(candidate: string): boolean {
+          return candidate.toLocaleLowerCase().includes(filteringCleaned);
+        }
+        result = result
+          .pipe(
+            map(transactions => transactions.filter(
+              ({ transactionDate, merchant, amount }) => {
+                return includesFilter(merchant)
+                  || includesFilter(formatDollars(amount))
+                  || includesFilter(formatMilliseconds(transactionDate));
+              },
+            )),
+          );
+      }
     }
 
     return result;

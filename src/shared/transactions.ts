@@ -19,3 +19,26 @@ export type TransactionFormatted = {
     Transaction[P]
   );
 };
+
+export function formatTransactions(transactions: Transaction[]): TransactionFormatted[] {
+  return transactions.map(
+    ({ amount, transactionDate, ...rest }) => ({
+      ...rest,
+      amount: formatDollars(amount),
+      transactionDate: formatMilliseconds(transactionDate),
+    }),
+  );
+}
+
+export function formatDollars(amount: Dollars): string {
+  return (amount > 0 ? '-' : '') + '$' + Math.abs(amount).toFixed(2);
+}
+
+const dateFormat = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  day: 'numeric',
+});
+export function formatMilliseconds(ms: Milliseconds): string {
+  const date = new Date(ms);
+  return dateFormat.format(date);
+}
