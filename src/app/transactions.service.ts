@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Transaction, transactionsApiUrlExt } from '../shared/transactions';
+import { Sorting } from '../shared/sorting';
+import { impossible } from '../shared/utils';
 
 @Injectable({
   providedIn: 'root',
@@ -41,11 +43,32 @@ export class TransactionsService {
       );
   }
 
-  getTransactions(): Observable<Transaction[]> {
+  getTransactions(
+    sorting?: Sorting,
+  ): Observable<Transaction[]> {
     const { http, transactionsUrl, handleError } = this;
     return http.get<Transaction[]>(transactionsUrl)
       .pipe(
-        catchError(handleError('getTransactions', [])),
+        catchError(handleError<Transaction[]>('getTransactions', [])),
+        map(transactions => {
+          if (sorting === undefined) { return transactions; }
+
+          const compare = toTransactionComparison(sorting);
+          return transactions.sort(compare);
+        }),
       );
+  }
+}
+
+function toTransactionComparison(sorting: Sorting): (a: Transaction, b: Transaction) => number {
+  const directionFactor = sorting.direction === 'ascending' ? +1 : -1;
+  switch (sorting.column) {
+    case 'date': return ({ transactionDate: a }, { transactionDate: b }) =>
+      (b - a) * directionFactor;
+    case 'beneficiary': return ({ merchant: a }, {merchant: b }) =>
+      a.localeCompare(b) * directionFactor;
+    case 'amount': return ({ amount: a }, { amount: b }) =>
+      (b - a) * directionFactor;
+    default: return impossible(sorting.column);
   }
 }
