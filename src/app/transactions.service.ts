@@ -47,16 +47,20 @@ export class TransactionsService {
     sorting?: Sorting,
   ): Observable<Transaction[]> {
     const { http, transactionsUrl, handleError } = this;
-    return http.get<Transaction[]>(transactionsUrl)
+    let result = http.get<Transaction[]>(transactionsUrl)
       .pipe(
         catchError(handleError<Transaction[]>('getTransactions', [])),
-        map(transactions => {
-          if (sorting === undefined) { return transactions; }
-
-          const compare = toTransactionComparison(sorting);
-          return transactions.sort(compare);
-        }),
       );
+
+    if (sorting !== undefined) {
+      const compare = toTransactionComparison(sorting);
+      result = result
+        .pipe(
+          map(transactions => transactions.sort(compare)),
+        );
+    }
+
+    return result;
   }
 }
 
