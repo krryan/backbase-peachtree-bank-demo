@@ -17,7 +17,7 @@ export class TransactionsService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   } as const;
 
-  constructor(
+  constructor (
     private http: HttpClient,
   ) { }
 
@@ -64,16 +64,23 @@ export class TransactionsService {
   }
 }
 
-function toTransactionComparison(sorting: Sorting): (a: Transaction, b: Transaction) => number {
+function toTransactionComparison(
+  sorting: Sorting,
+): (a: Transaction, b: Transaction) => number {
   const directionFactor = sorting.direction === 'ascending' ? +1 : -1;
+
   switch (sorting.column) {
+
     case 'date': return ({ transactionDate: a }, { transactionDate: b }) =>
       (a - b) * directionFactor;
-    case 'beneficiary': return ({ merchant: a }, {merchant: b }) =>
+
+    case 'beneficiary': return ({ merchant: a }, { merchant: b }) =>
       a.localeCompare(b) * directionFactor;
+
     case 'amount': return ({ amount: a }, { amount: b }) =>
       // "inverted" because payments are displayed as negative numbers
       (b - a) * directionFactor;
+
     default: return impossible(sorting.column);
   }
 }
