@@ -38,35 +38,52 @@
   flex: 0 0 auto;
 }
 
-.controls > input {
+.filtering {
+  display: flex;
+  flex-flow: row nowrap;
+  flex: 0 1 100%;
+}
+
+.filtering > input {
   font-size: 110%;
   border-top: none;
   border-left: none;
   border-right: none;
-  margin-right: 10%;
-  flex-grow: 1;
+  flex: 0 0 90%;
 }
 
-.controls > div {
+.filtering > button {
+  background: white;
+  color: red;
+  border: 1px solid #CCCCCC;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  margin: 5px;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.sorting {
   font-weight: bold;
   white-space: nowrap;
 }
 
-.controls > div > button {
+.sorting > button {
   text-transform: uppercase;
   margin: 0;
   padding: 5px 20px;
   background: white;
   border: 1px solid #CCCCCC;
 }
-.controls > div > button:not(:last-of-type) {
+.sorting > button:not(:last-of-type) {
   border-right: none;
 }
-.controls > div > button.ascending::after {
+.sorting > button.ascending::after {
   color: #CCCCCC;
   content: ' ▲';
 }
-.controls > div > button.descending::after {
+.sorting > button.descending::after {
   color: #CCCCCC;
   content: ' ▼';
 }

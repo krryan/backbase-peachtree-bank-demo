@@ -51,4 +51,9 @@ export class RecentTransactionsComponent implements OnInit {
     }
     this.updateTransactions();
   }
+
+  onClearFiltering = () => {
+    this.filtering = undefined;
+    this.updateTransactions();
+  }
 }
