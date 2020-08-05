@@ -1,3 +1,4 @@
+<ptb-modal *ngIf="modalService.message" [message]="modalService.message"></ptb-modal>
 <h1><span>Peachtree Bank</span></h1>
 <div>
   <ptb-make-a-transfer *ngIf="account" [fromAccount]="account"></ptb-make-a-transfer>

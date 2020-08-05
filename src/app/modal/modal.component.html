@@ -1,0 +1,5 @@
+<form [formGroup]="messageForm" (ngSubmit)="hide(true)">
+    <div>{{message.text}}</div>
+    <button *ngIf="message.cancel" (click)="hide(false)">{{message.cancel}}</button>
+    <button #modalSubmit type="submit">{{message.confirm}}</button>
+</form>

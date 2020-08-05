@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { UserAccount, userAccountApiUrlExt } from '../shared/user-account';
-import { catchError, mergeMap } from 'rxjs/operators';
+import { catchError, mergeMap, map } from 'rxjs/operators';
 import { Dollars } from '../shared/brands';
+import { ModalService } from './modal.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class UserAccountService {
 
   constructor (
     private http: HttpClient,
+    private modalService: ModalService,
   ) { }
 
   deductUserFunds(amount: Dollars): Observable<undefined> {
@@ -43,8 +45,10 @@ export class UserAccountService {
       ? http.get<UserAccount | undefined>(userAccountUrl)
         .pipe(
           catchError(err => {
-            console.error(err);
-            return of(undefined);
+            return this.modalService.show({
+              text: err,
+              confirm: 'OK',
+            }).pipe(map(() => undefined));
           }),
           mergeMap(userAccount => {
             this.cache = userAccount;

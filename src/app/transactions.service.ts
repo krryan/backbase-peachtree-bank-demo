@@ -11,6 +11,7 @@ import { Sorting } from '../shared/sorting';
 import { impossible } from '../shared/utils';
 import { AccountId, Dollars } from '../shared/brands';
 import { UserAccountService } from './user-account.service';
+import { ModalService } from './modal.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,19 +26,21 @@ export class TransactionsService {
   constructor (
     private http: HttpClient,
     private userAccountService: UserAccountService,
+    private modalService: ModalService,
   ) { }
 
   private handleError<T>(
     operation: string,
     defaultResult: T,
-    message = `Error during ${operation}.`,
+    toMessage: (error: any) => string = () => `Error during ${operation}.`,
   ): (error: any) => Observable<T> {
     return error => {
-      console.error(message, error);
+      console.error(toMessage(error), error);
 
-      // TODO: show something to user
-
-      return of(defaultResult);
+      return this.modalService.show({ text: toMessage(error), confirm: 'OK' })
+        .pipe(
+          map(() => defaultResult),
+        );
     };
   }
 
@@ -62,9 +65,27 @@ export class TransactionsService {
 
   addNewTransaction(
     account: AccountId,
-    merchant: string,
-    amount: Dollars,
-  ): Observable<unknown> {
+    merchant: string | null,
+    amount: Dollars | null,
+  ): Observable<boolean> {
+
+    if (merchant === null || merchant.length <= 0) {
+      return throwError('You must specify who the beneficiary of the transaction will be.')
+        .pipe(
+          catchError(this.handleError('addNewTransaction', false,
+            error => error,
+          )),
+        );
+    }
+
+    if (amount === null || amount <= 0) {
+      return throwError('You must specify a number of dollars to include in the transaction.')
+        .pipe(
+          catchError(this.handleError('addNewTransaction', false,
+            error => error,
+          )),
+        );
+    }
 
     const transaction = identifyTransaction(account, {
       merchant,
@@ -74,10 +95,21 @@ export class TransactionsService {
       transactionType: 'Transaction',
     });
 
-    return this.userAccountService.deductUserFunds(amount)
+    return this.modalService.show({
+      text: `Transfer ${formatDollars(amount)} to ${merchant}?`,
+      cancel: 'Cancel',
+      confirm: 'Transfer',
+    })
       .pipe(
-        mergeMap(() => this.putTransaction(transaction)),
-        catchError(this.handleError('addNewTransaction', undefined)),
+        mergeMap(isConfirmed => isConfirmed
+          ? this.userAccountService.deductUserFunds(amount)
+            .pipe(
+              mergeMap(() => this.putTransaction(transaction)),
+              catchError(this.handleError('addNewTransaction', undefined, error => error)),
+              map(() => true),
+            )
+          : of(false),
+        ),
       );
   }
 

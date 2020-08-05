@@ -1,0 +1,40 @@
+:host {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+form {
+  display: block;
+  margin: auto;
+  margin-top: 30%;
+  border: none;
+  border-radius: 20px;
+  padding: 30px;
+  width: 30%;
+  background: white;
+  pointer-events: all;
+  text-align: right;
+}
+
+div {
+  text-align: left;
+}
+
+button {
+  display: inline-block;
+  margin: 5px 10px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border: 2px solid #EE7033;
+  border-radius: 5px;
+  height: auto;
+  width: auto;
+}
+
+button[type="submit"] {
+  background: #EE7033;
+  color: white;
+}

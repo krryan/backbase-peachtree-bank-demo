@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserAccountService } from './user-account.service';
 import { UserAccount } from '../shared/user-account';
+import { ModalService } from './modal.service';
 
 @Component({
   selector: 'ptb-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
 
   constructor (
     private userAccountService: UserAccountService,
+    public modalService: ModalService,
   ) { }
 
   ngOnInit(): void {

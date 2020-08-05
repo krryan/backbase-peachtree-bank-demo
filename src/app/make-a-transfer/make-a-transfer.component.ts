@@ -44,19 +44,14 @@ export class MakeATransferComponent implements OnInit, OnChanges {
     const { fromAccount, transactionsService } = this;
     const { to, amount } = transactionForm;
 
-    if (to === null || to.length <= 0 || amount === null || amount <= 0) {
-      console.log('Invalid transaction.');
-      return;
-    }
-
-    console.log(`${formatDollars(amount)} from ${fromAccount.accountName} to ${to}.`);
-
     transactionsService.addNewTransaction(fromAccount.accountId, to, amount)
-      .subscribe(() => {
-        this.transactionForm.reset({
-          from: toFromAccountControl(this.fromAccount),
-          to: null, amount: null,
-        });
+      .subscribe(wentThroughWithIt => {
+        if (wentThroughWithIt) {
+          this.transactionForm.reset({
+            from: toFromAccountControl(this.fromAccount),
+            to: null, amount: null,
+          });
+        }
       });
   }
 }
