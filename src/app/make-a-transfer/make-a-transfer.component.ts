@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { UserAccount } from '../../shared/user-account';
 import { formatDollars } from '../../shared/transactions';
 import { Dollars } from '../../shared/brands';
@@ -10,26 +10,36 @@ import { TransactionsService } from '../transactions.service';
   templateUrl: './make-a-transfer.component.html',
   styleUrls: ['./make-a-transfer.component.css'],
 })
-export class MakeATransferComponent implements OnInit {
+export class MakeATransferComponent implements OnInit, OnChanges {
 
   @Input()
   readonly fromAccount: UserAccount;
 
-  initialState: TransactionControlsConfig;
   transactionForm: TransactionFormGroup;
 
   constructor (
     private formBuilder: FormBuilder,
     private transactionsService: TransactionsService,
-  ) { }
+  ) {
+    this.transactionForm = groupTransactionForm(formBuilder, {
+      from: '', to: null, amount: null,
+    });
+  }
 
-  ngOnInit(): void {
-    this.initialState = {
+  private toDefaultState(): TransactionControlsConfig {
+    return {
       from: toAccountLabel(this.fromAccount),
       to: null,
       amount: null,
     };
-    this.transactionForm = groupTransactionForm(this.formBuilder, this.initialState);
+  }
+
+  ngOnInit(): void {
+    this.transactionForm = groupTransactionForm(this.formBuilder, this.toDefaultState());
+  }
+
+  ngOnChanges(): void {
+    this.transactionForm.reset(this.toDefaultState());
   }
 
   onSubmit = (transactionForm: TransactionControlsConfig) => {
@@ -43,9 +53,10 @@ export class MakeATransferComponent implements OnInit {
 
     console.log(`${formatDollars(amount)} from ${fromAccount.accountName} to ${to}.`);
 
-    transactionsService.addNewTransaction(fromAccount.accountId, to, amount);
-
-    this.transactionForm.reset(this.initialState);
+    transactionsService.addNewTransaction(fromAccount.accountId, to, amount)
+      .subscribe(justToForceIt => {
+        console.log(justToForceIt);
+      });
   }
 }
 

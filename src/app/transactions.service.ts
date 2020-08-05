@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import {
   Transaction, transactionsApiUrlExt,
   formatMilliseconds, formatDollars, IdedTransaction, identifyTransaction,
@@ -20,6 +20,7 @@ export class TransactionsService {
   private readonly transactionsUrl = `/api/${transactionsApiUrlExt}`;
 
   private cache: IdedTransaction[] | undefined;
+  private transactions = new BehaviorSubject<IdedTransaction[]>([]);
 
   constructor (
     private http: HttpClient,
@@ -43,25 +44,20 @@ export class TransactionsService {
   // The in-memory-web-api PUT method doesn't seem to work,
   // so just working with our own cache.
   private putTransaction(transaction: IdedTransaction): Observable<undefined> {
+    if (this.cache === undefined) {
+      // If that cache doesn't exist, we can do nothing.
+      return throwError('Cache must be set to add new transactions.');
+    }
+    const index = this.cache.findIndex(({ id }) => id === transaction.id);
+    if (index < 0) {
+      this.cache.push(transaction);
+    }
+    else {
+      this.cache[index] = transaction;
+    }
 
-    return this.userAccountService.deductUserFunds(transaction.amount)
-      .pipe(
-        map(() => {
-          if (this.cache === undefined) {
-            // If that cache doesn't exist, we can do nothing.
-            throw new Error('Cache must be set to add new transactions.');
-          }
-          const index = this.cache.findIndex(({ id }) => id === transaction.id);
-          if (index < 0) {
-            this.cache.push(transaction);
-          }
-          else {
-            this.cache[index] = transaction;
-          }
-
-          return undefined;
-        }),
-      );
+    this.transactions.next(this.cache);
+    return of(undefined);
   }
 
   addNewTransaction(
@@ -78,8 +74,9 @@ export class TransactionsService {
       transactionType: 'Transaction',
     });
 
-    return this.putTransaction(transaction)
+    return this.userAccountService.deductUserFunds(amount)
       .pipe(
+        mergeMap(() => this.putTransaction(transaction)),
         catchError(this.handleError('addNewTransaction', undefined)),
       );
   }
@@ -96,11 +93,13 @@ export class TransactionsService {
       ? http.get<IdedTransaction[]>(url)
         .pipe(
           catchError(handleError<IdedTransaction[]>('getTransactions', [])),
-          tap(transactions => {
+          mergeMap(transactions => {
             this.cache = transactions;
+            this.transactions.next(this.cache);
+            return this.transactions.asObservable();
           }),
         )
-      : of(cache);
+      : this.transactions.asObservable();
 
     if (sorting !== undefined) {
       const compare = toTransactionComparison(sorting);

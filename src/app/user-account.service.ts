@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { UserAccount, userAccountApiUrlExt } from '../shared/user-account';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, mergeMap } from 'rxjs/operators';
 import { Dollars } from '../shared/brands';
 
 @Injectable({
@@ -13,6 +13,7 @@ export class UserAccountService {
   private readonly userAccountUrl = `/api/${userAccountApiUrlExt}`;
 
   private cache: UserAccount | undefined;
+  private userAccount = new BehaviorSubject<UserAccount | undefined>(undefined);
 
   constructor (
     private http: HttpClient,
@@ -32,6 +33,7 @@ export class UserAccountService {
       ...this.cache,
       availableFunds: availableFunds - amount as Dollars,
     };
+    this.userAccount.next(this.cache);
     return of(undefined);
   }
 
@@ -44,10 +46,12 @@ export class UserAccountService {
             console.error(err);
             return of(undefined);
           }),
-          tap(userAccount => {
+          mergeMap(userAccount => {
             this.cache = userAccount;
+            this.userAccount.next(userAccount);
+            return this.userAccount.asObservable();
           }),
         )
-      : of(cache);
+      : this.userAccount.asObservable();
   }
 }
