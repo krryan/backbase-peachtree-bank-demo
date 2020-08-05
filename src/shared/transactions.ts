@@ -1,5 +1,7 @@
 import { Dollars, EncodedImage, Milliseconds, Hexadecimal, TransactionId } from './brands';
 
+export const transactionsApiUrlExt = 'transactions';
+
 export interface Transaction {
   readonly id: TransactionId;
   readonly amount: Dollars;
