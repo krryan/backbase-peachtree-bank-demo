@@ -6,7 +6,7 @@
   max-height: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  flex: 0 1 100%;
+  flex: 0 1 720px;
 }
 
 :host > h2 {
