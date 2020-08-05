@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TransactionsService } from '../transactions.service';
 import { TransactionFormatted } from '../../shared/transactions';
-import { Sorting, SortableColumn } from '../../shared/sorting';
+import { Sorting, SortableColumn, sortingColumns } from '../../shared/sorting';
 import { Dollars, Milliseconds } from '../../shared/brands';
 
 @Component({
@@ -11,10 +11,26 @@ import { Dollars, Milliseconds } from '../../shared/brands';
 })
 export class RecentTransactionsComponent implements OnInit {
 
+  columns = sortingColumns;
+
   transactions: TransactionFormatted[] = [];
   sorting: Sorting = { column: 'date', direction: 'descending' };
+
   toSortingClasses = (col: SortableColumn) =>
-    this.sorting.column === col ? [this.sorting.direction] : [];
+    this.sorting.column === col ? [this.sorting.direction] : []
+
+  onSortBy = (column: SortableColumn) => {
+    const { sorting: { direction } } = this;
+    if (this.sorting.column === column) {
+      this.sorting = {
+        column,
+        direction: direction === 'ascending' ? 'descending' : 'ascending',
+      };
+    }
+    else {
+      this.sorting = { column, direction };
+    }
+  }
 
   constructor (
     private transactionsService: TransactionsService,

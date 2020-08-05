@@ -1,4 +1,5 @@
-export type SortableColumn = 'date' | 'beneficiary' | 'amount';
+export const sortingColumns = ['date', 'beneficiary', 'amount'] as const;
+export type SortableColumn = typeof sortingColumns[number];
 
 export type SortingDirection = 'ascending' | 'descending';
 

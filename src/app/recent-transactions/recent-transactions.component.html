@@ -6,9 +6,12 @@
     <input type="text" placeholder="Search by typing" />
     <div>
       Sort by
-      <button [ngClass]="toSortingClasses('date')">Date</button>
-      <button [ngClass]="toSortingClasses('beneficiary')">Beneficiary</button>
-      <button [ngClass]="toSortingClasses('amount')">Amount</button>
+      <button *ngFor="let column of columns"
+        [ngClass]="toSortingClasses(column)"
+        (click)="onSortBy(column)"
+      >
+        {{column}}
+      </button>
     </div>
   </div>
 
