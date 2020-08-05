@@ -1,23 +1,27 @@
 <h2>Make a Transfer</h2>
 
-<div>
+<form [formGroup]="transactionForm" (ngSubmit)="onSubmit(transactionForm.value)">
   <label class="from-account">
     <div>From Account</div>
-    <input type="text" placeholder="Your Account" disabled
-      [value]="toFromAccountLabel()"
+    <input type="text" placeholder="Your Account"
+      formControlName="from"
     />
   </label>
 
   <label class="to-account">
     <div>To Account</div>
-    <input type="text" placeholder="Name of Beneficiary" />
+    <input type="text" placeholder="Name of Beneficiary"
+      formControlName="to"
+    />
   </label>
 
   <label class="amount">
     <div>Amount</div>
     <span class="currency">$</span>
-    <input type="number" placeholder="0.00" />
+    <input type="number" placeholder="0.00"
+      formControlName="amount"
+    />
   </label>
 
-  <button>Submit</button>
-</div>
+  <button type="submit">Submit</button>
+</form>

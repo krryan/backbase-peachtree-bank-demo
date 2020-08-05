@@ -23,7 +23,7 @@ h2 {
   flex: 0 0 auto;
 }
 
-:host > div {
+form {
   display: flex;
   flex-flow: column nowrap;
   background: white;
@@ -67,7 +67,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-button {
+button[type=submit] {
   background: #EE7033;
   color: white;
   text-transform: uppercase;
