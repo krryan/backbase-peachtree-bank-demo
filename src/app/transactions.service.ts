@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { Transaction, transactionsApiUrlExt, formatMilliseconds, formatDollars, TransactionsForAccount } from '../shared/transactions';
+import { catchError, map, tap } from 'rxjs/operators';
+import {
+  Transaction, transactionsApiUrlExt,
+  formatMilliseconds, formatDollars, IdedTransaction, identifyTransaction,
+  toRandomCategoryCode, toMillisecondsNow, transactionsApiQueryParamAccountId,
+} from '../shared/transactions';
 import { Sorting } from '../shared/sorting';
 import { impossible } from '../shared/utils';
-import { AccountId } from '../shared/brands';
+import { AccountId, Dollars } from '../shared/brands';
+import { UserAccountService } from './user-account.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,12 +19,11 @@ export class TransactionsService {
 
   private readonly transactionsUrl = `/api/${transactionsApiUrlExt}`;
 
-  private readonly httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  } as const;
+  private cache: IdedTransaction[] | undefined;
 
   constructor (
     private http: HttpClient,
+    private userAccountService: UserAccountService,
   ) { }
 
   private handleError<T>(
@@ -36,12 +40,47 @@ export class TransactionsService {
     };
   }
 
-  addTransaction(account: AccountId, transaction: Transaction): Observable<unknown> {
-    const { http, transactionsUrl, httpOptions, handleError } = this;
+  // The in-memory-web-api PUT method doesn't seem to work,
+  // so just working with our own cache.
+  private putTransaction(transaction: IdedTransaction): Observable<undefined> {
 
-    return http.put(transactionsUrl, transaction, httpOptions)
+    return this.userAccountService.deductUserFunds(transaction.amount)
       .pipe(
-        catchError(handleError('addTransaction', undefined)),
+        map(() => {
+          if (this.cache === undefined) {
+            // If that cache doesn't exist, we can do nothing.
+            throw new Error('Cache must be set to add new transactions.');
+          }
+          const index = this.cache.findIndex(({ id }) => id === transaction.id);
+          if (index < 0) {
+            this.cache.push(transaction);
+          }
+          else {
+            this.cache[index] = transaction;
+          }
+
+          return undefined;
+        }),
+      );
+  }
+
+  addNewTransaction(
+    account: AccountId,
+    merchant: string,
+    amount: Dollars,
+  ): Observable<unknown> {
+
+    const transaction = identifyTransaction(account, {
+      merchant,
+      amount,
+      categoryCode: toRandomCategoryCode(),
+      transactionDate: toMillisecondsNow(),
+      transactionType: 'Transaction',
+    });
+
+    return this.putTransaction(transaction)
+      .pipe(
+        catchError(this.handleError('addNewTransaction', undefined)),
       );
   }
 
@@ -50,13 +89,18 @@ export class TransactionsService {
     sorting?: Sorting,
     filtering?: string,
   ): Observable<Transaction[]> {
-    const { http, transactionsUrl, handleError } = this;
+    const { cache, http, transactionsUrl, handleError } = this;
 
-    let result = http.get<TransactionsForAccount>(`${transactionsUrl}/${account}`)
-      .pipe(
-        map(({ transactions }) => transactions),
-        catchError(handleError<Transaction[]>('getTransactions', [])),
-      );
+    const url = `${transactionsUrl}?${transactionsApiQueryParamAccountId}=^${account}$`;
+    let result = cache === undefined
+      ? http.get<IdedTransaction[]>(url)
+        .pipe(
+          catchError(handleError<IdedTransaction[]>('getTransactions', [])),
+          tap(transactions => {
+            this.cache = transactions;
+          }),
+        )
+      : of(cache);
 
     if (sorting !== undefined) {
       const compare = toTransactionComparison(sorting);

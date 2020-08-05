@@ -3,6 +3,7 @@ import { UserAccount } from '../../shared/user-account';
 import { formatDollars } from '../../shared/transactions';
 import { Dollars } from '../../shared/brands';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { TransactionsService } from '../transactions.service';
 
 @Component({
   selector: 'ptb-make-a-transfer',
@@ -19,6 +20,7 @@ export class MakeATransferComponent implements OnInit {
 
   constructor (
     private formBuilder: FormBuilder,
+    private transactionsService: TransactionsService,
   ) { }
 
   ngOnInit(): void {
@@ -31,15 +33,17 @@ export class MakeATransferComponent implements OnInit {
   }
 
   onSubmit = (transactionForm: TransactionControlsConfig) => {
-    const { fromAccount } = this;
+    const { fromAccount, transactionsService } = this;
     const { to, amount } = transactionForm;
 
-    if (to === null || amount === null || amount <= 0) {
+    if (to === null || to.length <= 0 || amount === null || amount <= 0) {
       console.log('Invalid transaction.');
       return;
     }
 
     console.log(`${formatDollars(amount)} from ${fromAccount.accountName} to ${to}.`);
+
+    transactionsService.addNewTransaction(fromAccount.accountId, to, amount);
 
     this.transactionForm.reset(this.initialState);
   }
