@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TransactionsService } from '../transactions.service';
-import { TransactionFormatted } from '../../shared/transactions';
+import { Transaction, TransactionFormatted } from '../../shared/transactions';
 import { Sorting, SortableColumn, sortingColumns } from '../../shared/sorting';
 import { Dollars, Milliseconds } from '../../shared/brands';
 
@@ -19,6 +19,25 @@ export class RecentTransactionsComponent implements OnInit {
   toSortingClasses = (col: SortableColumn) =>
     this.sorting.column === col ? [this.sorting.direction] : []
 
+  constructor (
+    private transactionsService: TransactionsService,
+  ) { }
+
+  private updateTransactions = (): void => {
+    const { transactionsService, sorting, takeTransactions } = this;
+
+    transactionsService.getTransactions(sorting)
+      .subscribe(takeTransactions);
+  }
+
+  private takeTransactions = (transactions: Transaction[]): void => {
+    this.transactions = formatTransactions(transactions);
+  }
+
+  ngOnInit(): void {
+    this.updateTransactions();
+  }
+
   onSortBy = (column: SortableColumn) => {
     const { sorting: { direction } } = this;
     if (this.sorting.column === column) {
@@ -30,25 +49,18 @@ export class RecentTransactionsComponent implements OnInit {
     else {
       this.sorting = { column, direction };
     }
+    this.updateTransactions();
   }
+}
 
-  constructor (
-    private transactionsService: TransactionsService,
-  ) { }
-
-  ngOnInit(): void {
-    this.transactionsService.getTransactions()
-      .subscribe(transactions => {
-        this.transactions = transactions.map(
-          ({ amount, transactionDate, ...rest }) => ({
-            ...rest,
-            amount: formatDollars(amount),
-            transactionDate: formatMilliseconds(transactionDate),
-          }),
-        );
-      });
-  }
-
+function formatTransactions(transactions: Transaction[]): TransactionFormatted[] {
+  return transactions.map(
+    ({ amount, transactionDate, ...rest }) => ({
+      ...rest,
+      amount: formatDollars(amount),
+      transactionDate: formatMilliseconds(transactionDate),
+    }),
+  );
 }
 
 function formatDollars(amount: Dollars): string {

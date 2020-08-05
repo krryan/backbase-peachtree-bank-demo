@@ -68,10 +68,11 @@ function toTransactionComparison(sorting: Sorting): (a: Transaction, b: Transact
   const directionFactor = sorting.direction === 'ascending' ? +1 : -1;
   switch (sorting.column) {
     case 'date': return ({ transactionDate: a }, { transactionDate: b }) =>
-      (b - a) * directionFactor;
+      (a - b) * directionFactor;
     case 'beneficiary': return ({ merchant: a }, {merchant: b }) =>
       a.localeCompare(b) * directionFactor;
     case 'amount': return ({ amount: a }, { amount: b }) =>
+      // "inverted" because payments are displayed as negative numbers
       (b - a) * directionFactor;
     default: return impossible(sorting.column);
   }
