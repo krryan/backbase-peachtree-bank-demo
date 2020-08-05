@@ -1,60 +1,81 @@
 :host {
-    display: flex;
-    flex-flow: column nowrap;
-    margin: 0 10px 20px 10px;
-    height: auto;
-    max-height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    flex: 0 0 250px;
-  }
-  
-  h2 {
-    background: url(../../assets/icons/arrows.png) 13px center no-repeat #0C8397;
-    color: white;
-    margin: 0;
-    padding: 0 13px 0 53px;
-    font-size: 110%;
-    font-weight: normal;
-    text-align: center;
-    height: 30px;
-    line-height: 30px;
-    white-space: nowrap;
-    flex: 0 0 auto;
-  }
-  
-  :host > div {
-    display: flex;
-    flex-flow: column nowrap;
-    background: white;
-    padding: 10px;
-    flex: 0 0 auto;
-    overflow: hidden;
-  }
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0 10px 20px 10px;
+  height: auto;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex: 0 0 250px;
+}
 
-  label {
-      display: block;
-      margin-top: 20px;
-  }
+h2 {
+  background: url(../../assets/icons/arrows.png) 13px center no-repeat #0C8397;
+  color: white;
+  margin: 0;
+  padding: 0 13px 0 53px;
+  font-size: 110%;
+  font-weight: normal;
+  text-align: center;
+  height: 30px;
+  line-height: 30px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
 
-  input {
-      display: block;
-      font-size: 110%;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      width: 100%;
-  }
+:host > div {
+  display: flex;
+  flex-flow: column nowrap;
+  background: white;
+  padding: 10px;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
 
-  button {
-      background: #EE7033;
-      color: white;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 5px;
-      margin-top: 40px;
-      height: 40px;
-      line-height: 40px;
-      width: 70%;
-      margin-left: auto;
-  }
+label {
+  display: block;
+  margin-top: 20px;
+}
+
+input {
+  display: block;
+  font-size: 110%;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:disabled {
+  background-color: white;
+  color: #CCCCCC;
+}
+
+.currency {
+  position: absolute;
+  padding-left: 0.25em;
+  color: #888888;
+}
+
+.amount > input {
+  padding-left: 1em;
+}
+
+input[type=number]::-webkit-outer-spin-button {
+  display: none;
+  margin: 0;
+}
+
+button {
+  background: #EE7033;
+  color: white;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
+  margin-top: 40px;
+  height: 40px;
+  line-height: 40px;
+  width: 70%;
+  margin-left: auto;
+}
