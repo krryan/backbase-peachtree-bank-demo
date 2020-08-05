@@ -13,6 +13,7 @@ export class RecentTransactionsComponent implements OnInit {
   columns = sortingColumns;
 
   transactions: TransactionFormatted[] = [];
+  filtering?: string;
   sorting: Sorting = { column: 'date', direction: 'descending' };
 
   toSortingClasses = (col: SortableColumn) =>
@@ -22,10 +23,10 @@ export class RecentTransactionsComponent implements OnInit {
     private transactionsService: TransactionsService,
   ) { }
 
-  private updateTransactions = (): void => {
-    const { transactionsService, sorting, takeTransactions } = this;
+  updateTransactions = (): void => {
+    const { transactionsService, sorting, filtering, takeTransactions } = this;
 
-    transactionsService.getTransactions(sorting)
+    transactionsService.getTransactions(sorting, filtering)
       .subscribe(takeTransactions);
   }
 

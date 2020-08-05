@@ -3,7 +3,10 @@
 <div>
 
   <div class="controls">
-    <input type="text" placeholder="Search by typing" />
+    <input type="text" placeholder="Search by typing"
+      [(ngModel)]="filtering"
+      (ngModelChange)="updateTransactions()"
+    />
     <div>
       Sort by
       <button *ngFor="let column of columns"
