@@ -11,3 +11,11 @@ export interface Transaction {
   readonly transactionDate: Milliseconds;
   readonly transactionType: 'Card Payment' | 'Online Transfer' | 'Transaction';
 }
+
+export type TransactionFormatted = {
+  readonly [P in keyof Transaction]: (
+    Transaction[P] extends Dollars ? string :
+    Transaction[P] extends Milliseconds ? string :
+    Transaction[P]
+  );
+};

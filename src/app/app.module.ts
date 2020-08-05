@@ -6,10 +6,12 @@ import { InMemoryDataService } from './in-memory-data.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { RecentTransactionsComponent } from './recent-transactions/recent-transactions.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    RecentTransactionsComponent,
   ],
   imports: [
     BrowserModule,

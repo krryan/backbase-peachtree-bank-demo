@@ -1,0 +1,139 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  background: white;
+  margin: 0;
+  max-height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex: 0 1 100%;
+}
+
+:host > h2 {
+  background: url(../../assets/icons/briefcase.png) 13px center no-repeat #0C8397;
+  color: white;
+  margin: 0;
+  padding: 0 13px 0 53px;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+:host > div {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 10px;
+  flex: 0 1 100%;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  flex-flow: row nowrap;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 0 0 auto;
+}
+
+.controls > input {
+  font-size: 110%;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  margin-right: 10%;
+  flex-grow: 1;
+}
+
+.controls > div {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.controls > div > button {
+  text-transform: uppercase;
+  margin: 0;
+  padding: 5px 20px;
+  background: white;
+  border: 1px solid #CCCCCC;
+}
+.controls > div > button:not(:last-of-type) {
+  border-right: none;
+}
+.controls > div > button.ascending::after {
+  color: #CCCCCC;
+  content: ' ▲';
+}
+.controls > div > button.descending::after {
+  color: #CCCCCC;
+  content: ' ▼';
+}
+
+.list {
+  overflow: auto;
+  border-color: #CCCCCC;
+  border-style: solid;
+  border-width: 2px 0;
+  flex: 0 1 100%;
+}
+
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  border: #CCCCCC 2px solid;
+  border-width: 0 2px 0 10px;
+  display: flex;
+  flex-direction: row;
+}
+li:not(:last-child) {
+  border-bottom-width: 2px;
+}
+
+li > div {
+  display: inline-block;
+  vertical-align: middle;
+  min-height: 40px;
+  margin: 10px 0;
+  flex: 0 0 auto;
+}
+
+li > .transaction-date {
+  width: 70px;
+  text-align: center;
+  line-height: 40px;
+}
+
+li > .merchant-logo {
+  width: 40px;
+  margin: 10px;
+  background: contain center center no-repeat transparent;
+}
+
+li > .beneficiary-and-type {
+  flex: 0 1 100%;
+  min-width: 0;
+  padding-left: 50px;
+  background-position: 0 0;
+  background-size: 40px 40px;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+li > .beneficiary-and-type > .beneficiary {
+  font-weight: bold;
+}
+
+li > .amount {
+  text-align: right;
+  padding: 0 20px;
+  line-height: 40px;
+}

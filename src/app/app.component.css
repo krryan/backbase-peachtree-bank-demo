@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+h1 {
+  width: 100%;
+  height: 100px;
+  margin: 0;
+  background: url(../assets/logo.jpg) 50px center no-repeat white;
+  border-bottom: 2px solid #FF9655;
+  flex: 0 0 auto;
+}
+
+/*
+ * Text alternative to logo, for accessibility.
+ * Hidden from visual browsers, per guidelines from
+ * https://accessibility.18f.gov/hidden-content/
+ */
+h1 > span {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+div {
+  display: flex;
+  flex-flow: row wrap;
+  padding: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex: 0 1 100%;
+}

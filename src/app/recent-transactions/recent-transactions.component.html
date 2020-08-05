@@ -1,0 +1,34 @@
+<h2>Recent Transactions</h2>
+
+<div>
+
+  <div class="controls">
+    <input type="text" placeholder="Search by typing" />
+    <div>
+      Sort by
+      <button [ngClass]="toSortingClasses('date')">Date</button>
+      <button [ngClass]="toSortingClasses('beneficiary')">Beneficiary</button>
+      <button [ngClass]="toSortingClasses('amount')">Amount</button>
+    </div>
+  </div>
+
+  <div class="list">
+    <ol>
+
+      <li *ngFor="let transaction of transactions" [style.border-left-color]="transaction.categoryCode">
+
+        <div class="transaction-date">{{transaction.transactionDate}}</div>
+
+        <div class="beneficiary-and-type" [style.background-image]="'url(' + transaction.merchantLogo + ')'">
+          <div class="beneficiary">{{transaction.merchant}}</div>
+          <div class="transaction-type">{{transaction.transactionType}}</div>
+        </div>
+
+        <div class="amount">{{transaction.amount}}</div>
+
+      </li>
+
+    </ol>
+  </div>
+
+</div>
