@@ -15,31 +15,29 @@ export class MakeATransferComponent implements OnInit, OnChanges {
   @Input()
   readonly fromAccount: UserAccount;
 
-  transactionForm: TransactionFormGroup;
+  transactionForm: FormGroup;
 
   constructor (
     private formBuilder: FormBuilder,
     private transactionsService: TransactionsService,
   ) {
-    this.transactionForm = groupTransactionForm(formBuilder, {
-      from: '', to: null, amount: null,
+    this.transactionForm = formBuilder.group({
+      from: { value: '', disabled: true }, to: null, amount: null,
     });
   }
 
-  private toDefaultState(): TransactionControlsConfig {
-    return {
-      from: toAccountLabel(this.fromAccount),
-      to: null,
-      amount: null,
-    };
-  }
-
   ngOnInit(): void {
-    this.transactionForm = groupTransactionForm(this.formBuilder, this.toDefaultState());
+    this.transactionForm = this.formBuilder.group({
+      ...this.transactionForm.value,
+      from: toFromAccountControl(this.fromAccount),
+    });
   }
 
   ngOnChanges(): void {
-    this.transactionForm.reset(this.toDefaultState());
+    this.transactionForm.reset({
+      ...this.transactionForm.value,
+      from: toFromAccountControl(this.fromAccount),
+    });
   }
 
   onSubmit = (transactionForm: TransactionControlsConfig) => {
@@ -54,28 +52,25 @@ export class MakeATransferComponent implements OnInit, OnChanges {
     console.log(`${formatDollars(amount)} from ${fromAccount.accountName} to ${to}.`);
 
     transactionsService.addNewTransaction(fromAccount.accountId, to, amount)
-      .subscribe(justToForceIt => {
-        console.log(justToForceIt);
+      .subscribe(() => {
+        this.transactionForm.reset({
+          from: toFromAccountControl(this.fromAccount),
+          to: null, amount: null,
+        });
       });
   }
 }
 
 interface TransactionControlsConfig {
-  readonly from: string;
+  readonly from: { value: string, disabled: true };
   readonly to: string | null;
   readonly amount: Dollars | null;
 }
-type TransactionFormGroup =
-  & Omit<FormGroup, 'value'>
-  & { value: TransactionControlsConfig };
-function groupTransactionForm(
-  formBuilder: FormBuilder,
-  { from, ...rest }: TransactionControlsConfig,
-): TransactionFormGroup {
-  return formBuilder.group({
-    ...rest,
-    from: { value: from, disabled: true },
-  });
+
+function toFromAccountControl(
+  from: UserAccount,
+): TransactionControlsConfig['from'] {
+  return { value: toAccountLabel(from), disabled: true };
 }
 
 const toAccountLabel = (account: UserAccount): string => {
