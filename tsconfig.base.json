@@ -16,6 +16,7 @@
       "es2018",
       "dom"
     ],
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "strictNullChecks": true
   }
 }

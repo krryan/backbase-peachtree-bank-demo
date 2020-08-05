@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { TransactionsService } from '../transactions.service';
 import { Transaction, TransactionFormatted, formatTransactions } from '../../shared/transactions';
 import { Sorting, SortableColumn, sortingColumns } from '../../shared/sorting';
+import { AccountId } from '../../shared/brands';
 
 @Component({
   selector: 'ptb-recent-transactions',
@@ -9,6 +10,9 @@ import { Sorting, SortableColumn, sortingColumns } from '../../shared/sorting';
   styleUrls: ['./recent-transactions.component.css'],
 })
 export class RecentTransactionsComponent implements OnInit {
+
+  @Input()
+  accountId: AccountId;
 
   columns = sortingColumns;
 
@@ -24,9 +28,9 @@ export class RecentTransactionsComponent implements OnInit {
   ) { }
 
   updateTransactions = (): void => {
-    const { transactionsService, sorting, filtering, takeTransactions } = this;
+    const { accountId, transactionsService, sorting, filtering, takeTransactions } = this;
 
-    transactionsService.getTransactions(sorting, filtering)
+    transactionsService.getTransactions(accountId, sorting, filtering)
       .subscribe(takeTransactions);
   }
 

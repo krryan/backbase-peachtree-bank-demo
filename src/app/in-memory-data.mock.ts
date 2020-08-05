@@ -1,4 +1,10 @@
-import { Dollars, EncodedImage, Milliseconds, Hexadecimal } from '../shared/brands';
+import { Dollars, EncodedImage, Milliseconds, Hexadecimal, AccountId } from '../shared/brands';
+
+export const theOneAccount = {
+  accountName: 'Free Checking',
+  accountId: '4692' as AccountId,
+  availableFunds: 5825.76 as Dollars,
+}
 
 export const transactions = [
   {

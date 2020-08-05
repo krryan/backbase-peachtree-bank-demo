@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Transaction, transactionsApiUrlExt, formatMilliseconds, formatDollars } from '../shared/transactions';
+import { Transaction, transactionsApiUrlExt, formatMilliseconds, formatDollars, TransactionsForAccount } from '../shared/transactions';
 import { Sorting } from '../shared/sorting';
 import { impossible } from '../shared/utils';
+import { AccountId } from '../shared/brands';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransactionsService {
 
-  private transactionsUrl = `/api/${transactionsApiUrlExt}`;
+  private readonly transactionsUrl = `/api/${transactionsApiUrlExt}`;
 
   private readonly httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -35,8 +36,9 @@ export class TransactionsService {
     };
   }
 
-  addTransaction(transaction: Transaction): Observable<unknown> {
+  addTransaction(account: AccountId, transaction: Transaction): Observable<unknown> {
     const { http, transactionsUrl, httpOptions, handleError } = this;
+
     return http.put(transactionsUrl, transaction, httpOptions)
       .pipe(
         catchError(handleError('addTransaction', undefined)),
@@ -44,12 +46,15 @@ export class TransactionsService {
   }
 
   getTransactions(
+    account: AccountId,
     sorting?: Sorting,
     filtering?: string,
   ): Observable<Transaction[]> {
     const { http, transactionsUrl, handleError } = this;
-    let result = http.get<Transaction[]>(transactionsUrl)
+
+    let result = http.get<TransactionsForAccount>(`${transactionsUrl}/${account}`)
       .pipe(
+        map(({ transactions }) => transactions),
         catchError(handleError<Transaction[]>('getTransactions', [])),
       );
 

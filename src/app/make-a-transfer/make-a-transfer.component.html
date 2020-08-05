@@ -3,7 +3,9 @@
 <div>
   <label class="from-account">
     <div>From Account</div>
-    <input type="text" placeholder="Your Account" disabled />
+    <input type="text" placeholder="Your Account" disabled
+      [value]="toFromAccountLabel()"
+    />
   </label>
 
   <label class="to-account">

@@ -1,5 +1,5 @@
 <h1><span>Peachtree Bank</span></h1>
 <div>
-  <ptb-make-a-transfer></ptb-make-a-transfer>
-  <ptb-recent-transactions></ptb-recent-transactions>
+  <ptb-make-a-transfer *ngIf="account" [fromAccount]="account"></ptb-make-a-transfer>
+  <ptb-recent-transactions *ngIf="account" [accountId]="account.accountId"></ptb-recent-transactions>
 </div>

@@ -1,6 +1,12 @@
-import { Dollars, EncodedImage, Milliseconds, Hexadecimal, TransactionId } from './brands';
+import { Dollars, EncodedImage, Milliseconds, Hexadecimal, TransactionId, AccountId } from './brands';
 
 export const transactionsApiUrlExt = 'transactions';
+export const transactionsApiQueryParamAccount = 'account';
+
+export interface TransactionsForAccount {
+  readonly id: AccountId;
+  readonly transactions: Transaction[];
+}
 
 export interface Transaction {
   readonly id: TransactionId;
@@ -24,14 +30,14 @@ export function formatTransactions(transactions: Transaction[]): TransactionForm
   return transactions.map(
     ({ amount, transactionDate, ...rest }) => ({
       ...rest,
-      amount: formatDollars(amount),
+      amount: formatDollars(-amount as Dollars),
       transactionDate: formatMilliseconds(transactionDate),
     }),
   );
 }
 
 export function formatDollars(amount: Dollars): string {
-  return (amount > 0 ? '-' : '') + '$' + Math.abs(amount).toFixed(2);
+  return (amount < 0 ? '-' : '') + '$' + Math.abs(amount).toFixed(2);
 }
 
 const dateFormat = new Intl.DateTimeFormat(undefined, {
