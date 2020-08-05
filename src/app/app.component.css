@@ -3,7 +3,7 @@
   flex-flow: column nowrap;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 h1 {
@@ -34,9 +34,8 @@ h1 > span {
 div {
   display: flex;
   flex-flow: row wrap;
-  background: url(../assets/background.jpg) center center no-repeat;
+  background: url(../assets/background.jpg) 0 0 fixed no-repeat;
   padding: 60px 10px;
-  overflow: hidden;
   box-sizing: border-box;
-  flex: 0 1 100%;
+  flex: 1 1 100%;
 }

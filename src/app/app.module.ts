@@ -8,11 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RecentTransactionsComponent } from './recent-transactions/recent-transactions.component';
+import { MakeATransferComponent } from './make-a-transfer/make-a-transfer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RecentTransactionsComponent,
+    MakeATransferComponent,
   ],
   imports: [
     BrowserModule,
