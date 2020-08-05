@@ -34,7 +34,8 @@ h1 > span {
 div {
   display: flex;
   flex-flow: row wrap;
-  padding: 10px;
+  background: url(../assets/background.jpg) center center no-repeat;
+  padding: 60px 10px;
   overflow: hidden;
   box-sizing: border-box;
   flex: 0 1 100%;

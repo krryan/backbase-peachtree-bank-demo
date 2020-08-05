@@ -2,7 +2,7 @@
 
 html, body {
     font-family: 'Kanit', sans-serif;
-    background: url(./assets/background.jpg) no-repeat;
+    font-size: 10pt;
     margin: 0;
     padding: 0;
     height: 100%;
