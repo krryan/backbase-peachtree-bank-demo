@@ -85,11 +85,12 @@
         "always"
       ]
     },
+    "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
     "space-before-function-paren": {
       "options": {
         "anonymous": "never",
         "asyncArrow": "always",
-        "constructor": "never",
+        "constructor": "always",
         "method": "never",
         "named": "never"
       }

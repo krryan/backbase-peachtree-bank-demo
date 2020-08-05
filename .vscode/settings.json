@@ -1,0 +1,7 @@
+{
+    "typescript.format.insertSpaceAfterConstructor": true,
+    "typescript.format.semicolons": "insert",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.preferences.quoteStyle": "single",
+    "tslint.configFile": "tslint.json"
+}

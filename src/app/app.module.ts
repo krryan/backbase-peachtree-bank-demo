@@ -20,6 +20,6 @@ import { AppComponent } from './app.component';
     ),
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
