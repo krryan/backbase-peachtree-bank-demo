@@ -22,6 +22,10 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 Ditto above.
 
+## Heroku Demo
+
+This demo can be viewed at https://backbase-peachtree-bank-demo.herokuapp.com/.
+
 ## Application Structure
 
 Fairly basic Angular application, I think, with the possible exception of `/shared`
