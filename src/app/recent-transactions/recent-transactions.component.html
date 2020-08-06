@@ -24,7 +24,7 @@
   <div class="list">
     <ol>
 
-      <li *ngFor="let transaction of transactions" [style.border-left-color]="transaction.categoryCode">
+      <li *ngFor="let transaction of transactions$ | async" [style.border-left-color]="transaction.categoryCode">
 
         <div class="transaction-date">{{transaction.transactionDate}}</div>
 

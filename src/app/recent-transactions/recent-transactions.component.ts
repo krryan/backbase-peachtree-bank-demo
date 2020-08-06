@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TransactionsService } from '../transactions.service';
-import { Transaction, TransactionFormatted, formatTransactions } from '../../shared/transactions';
+import { TransactionFormatted, formatTransactions } from '../../shared/transactions';
 import { Sorting, SortableColumn, sortingColumns } from '../../shared/sorting';
-import { AccountId } from '../../shared/brands';
+import { AccountId, Milliseconds } from '../../shared/brands';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'ptb-recent-transactions',
@@ -16,8 +18,9 @@ export class RecentTransactionsComponent implements OnInit {
 
   columns = sortingColumns;
 
-  transactions: TransactionFormatted[] = [];
+  transactions$ = new Observable<TransactionFormatted[]>();
   filtering?: string;
+  private filterPattern$ = new BehaviorSubject<string | undefined>(this.filtering);
   sorting: Sorting = { column: 'date', direction: 'descending' };
 
   toSortingClasses = (col: SortableColumn) =>
@@ -28,18 +31,22 @@ export class RecentTransactionsComponent implements OnInit {
   ) { }
 
   updateTransactions = (): void => {
-    const { accountId, transactionsService, sorting, filtering, takeTransactions } = this;
-
-    transactionsService.getTransactions(accountId, sorting, filtering)
-      .subscribe(takeTransactions);
-  }
-
-  private takeTransactions = (transactions: Transaction[]): void => {
-    this.transactions = formatTransactions(transactions);
+    const { filtering } = this;
+    this.filterPattern$.next(filtering);
   }
 
   ngOnInit(): void {
-    this.updateTransactions();
+    this.transactions$ = this.filterPattern$
+      .pipe(
+        debounceTime(200 as Milliseconds),
+        distinctUntilChanged(),
+        switchMap(filtering =>
+          this.transactionsService.getTransactions(
+            this.accountId, this.sorting, filtering,
+          ),
+        ),
+        map(formatTransactions),
+      );
   }
 
   onSortBy = (column: SortableColumn) => {
